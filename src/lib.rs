@@ -4,11 +4,14 @@ pub mod array2d
     use core::mem;
     use core::ops::{Index, IndexMut};
 
+    /// trait that is used for indexing the 2d array
     pub trait GridIdx {
         fn no_row(&self) -> usize;
         fn no_column(&self) -> usize;
     }
 
+
+    /// wrapper struct for iterating over rows
     pub struct Rows<'a, T>
     {
         pub(super) v: &'a [T],
@@ -34,6 +37,8 @@ pub mod array2d
         }
     }
 
+
+    /// wrapper struct for iterating over mutable rows
     pub struct RowsMut<'a, T>
     {
         pub(super) v: &'a mut [T],
@@ -61,10 +66,12 @@ pub mod array2d
         }
     }
 
+    /// struct that expresses index in 2d array
     pub struct GridPos {
         pub row: usize,
         pub column: usize,
     }
+
 
     impl GridPos {
         pub fn new(r: usize, c: usize) -> Self {
@@ -103,12 +110,14 @@ pub mod array2d
     }
 
     #[derive(Debug)]
+    /// the main struct for the 2d array
     pub struct Array2d<T> {
         vec_slice: Box<[T]>,
         no_rows: usize,
         no_columns: usize,
     }
 
+    /// default implementation, creates an empty array
     impl<T> Default for Array2d<T>
     {
         fn default() -> Self {
@@ -121,7 +130,7 @@ pub mod array2d
     }
 
     impl<T> Array2d<T> {
-        /// create a new 2d array each elem of type T no
+        /// create a new 2d array each elem of type T
         pub fn filled_with(element: T, r: usize, c: usize) -> Self
             where
                 T: Clone,
@@ -136,20 +145,23 @@ pub mod array2d
             }
         }
 
+        /// return the 2d array as 1d slice iterable
         pub fn iter(&self) -> impl Iterator<Item=&T>
         {
             self.vec_slice.iter()
         }
 
+        /// return the row count
         pub fn row_count(&self) -> usize {
             self.no_rows
         }
 
+        /// return the column count
         pub fn column_count(&self) -> usize {
             self.no_columns
         }
 
-        /// convert 2d position to 1d position row_len * row_index + col_index
+        /// convert 2d position to 1d position row_to * column_count + column_to, row_major
         pub fn d2_index_d1<F>(&self, pos: &F) -> usize
             where
                 F: GridIdx,
@@ -157,7 +169,7 @@ pub mod array2d
             pos.no_row() * self.column_count() + pos.no_column()
         }
 
-        /// swap two position
+        /// swap two position values
         pub fn swap<F, K>(&mut self, pos1: &F, pos2: &K)
             where
                 F: GridIdx,
@@ -168,6 +180,7 @@ pub mod array2d
             self.vec_slice.swap(converted_rc1, converted_rc2);
         }
 
+        /// return the row between containing the index
         pub fn row_between(&self, row_index: usize) -> (usize, usize) {
             assert!(row_index < self.row_count());
             let start = row_index * self.column_count();
@@ -175,23 +188,28 @@ pub mod array2d
             (start, end)
         }
 
+        /// return row as iterable
         pub fn iter_row(&self, row_index: usize) -> impl Iterator<Item=&T> {
             let (start, end) = self.row_between(row_index);
-            let w = self.vec_slice[start..end].iter();
-            w
+            self.vec_slice[start..end].iter()
+
         }
 
+        /// return row as mutable
         pub fn mut_row(&mut self, row_index: usize) -> &mut [T]
         {
             let (start, end) = self.row_between(row_index);
             &mut self.vec_slice[start..end]
         }
 
+
+        /// return row as mutable iterable
         pub fn iter_mut_row(&mut self, row_index: usize) -> impl Iterator<Item=&mut T> {
             let (start, end) = self.row_between(row_index);
             self.vec_slice[start..end].iter_mut()
         }
 
+        /// iterate over the rows as mutable
         pub fn iter_mut_rows(&mut self) -> RowsMut<'_, T>
         {
             let c = self.column_count();
@@ -202,6 +220,7 @@ pub mod array2d
             }
         }
 
+        /// iterate over the rows
         pub fn iter_rows(&self) -> impl Iterator<Item=impl Iterator<Item=&T>> {
             (0_usize..self.row_count()).map(move |row_index| self.iter_row(row_index))
         }
