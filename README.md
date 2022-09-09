@@ -3,6 +3,8 @@
 
 
 Array2ds is a none-bloated library in rust for rust by rust for handling staticly sized 2d array/grids
+to run the examples:
+cargo run --example 'example_name'
 
 - Uses only Safe Rust, no usage of "unsafe"
 - Works I guess
@@ -14,6 +16,7 @@ Array2ds is a none-bloated library in rust for rust by rust for handling staticl
 - iterating over rows both mutable and not
 - grid sized cant be changed after created
 - can index with (row,column) or [row,column] and easily overload to other ways
+- UPCOMING: iterating over columns, and diagnoly
 
 ```rust
 #[test]

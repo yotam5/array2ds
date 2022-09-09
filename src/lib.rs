@@ -1,5 +1,4 @@
-pub mod array2d
-{
+pub mod array2d {
     use core::iter::Iterator;
     use core::mem;
     use core::ops::{Index, IndexMut};
@@ -10,17 +9,13 @@ pub mod array2d
         fn no_column(&self) -> usize;
     }
 
-
     /// wrapper struct for iterating over rows
-    pub struct Rows<'a, T>
-    {
+    pub struct Rows<'a, T> {
         pub(super) v: &'a [T],
         pub(super) skip_cols: usize,
-
     }
 
-    impl<'a, T> Iterator for Rows<'a, T>
-    {
+    impl<'a, T> Iterator for Rows<'a, T> {
         type Item = &'a [T];
 
         fn next(&mut self) -> Option<Self::Item> {
@@ -37,22 +32,18 @@ pub mod array2d
         }
     }
 
-
     /// wrapper struct for iterating over mutable rows
-    pub struct RowsMut<'a, T>
-    {
+    pub struct RowsMut<'a, T> {
         pub(super) v: &'a mut [T],
         pub(super) no_cols: usize,
         pub(super) skip_cols: usize,
     }
 
-    impl<'a, T> Iterator for RowsMut<'a, T>
-    {
+    impl<'a, T> Iterator for RowsMut<'a, T> {
         type Item = &'a mut [T];
 
         fn next(&mut self) -> Option<Self::Item> {
-            if !self.v.is_empty() && self.skip_cols < self.no_cols
-            {
+            if !self.v.is_empty() && self.skip_cols < self.no_cols {
                 let tmp = mem::take(&mut self.v);
                 let (head, tail) = tmp.split_at_mut(self.no_cols);
                 if tail.is_empty() {
@@ -71,7 +62,6 @@ pub mod array2d
         pub row: usize,
         pub column: usize,
     }
-
 
     impl GridPos {
         pub fn new(r: usize, c: usize) -> Self {
@@ -118,8 +108,7 @@ pub mod array2d
     }
 
     /// default implementation, creates an empty array
-    impl<T> Default for Array2d<T>
-    {
+    impl<T> Default for Array2d<T> {
         fn default() -> Self {
             Array2d {
                 vec_slice: Box::new([]),
@@ -130,10 +119,10 @@ pub mod array2d
     }
 
     impl<T> Array2d<T> {
-        /// create a new 2d array each elem of type T
+        /// create a new 2d array each elem of type T where T is clonable
         pub fn filled_with(element: T, r: usize, c: usize) -> Self
-            where
-                T: Clone,
+        where
+            T: Clone,
         {
             assert!(r >= 1 && c >= 1);
             let v = vec![element; r * c];
@@ -145,9 +134,26 @@ pub mod array2d
             }
         }
 
-        /// return the 2d array as 1d slice iterable
-        pub fn iter(&self) -> impl Iterator<Item=&T>
+        /// create a new 2d array each elem of type T where T is the default implementation
+        pub fn filled_with_default(r: usize, c: usize) -> Self
+        where
+            T: Default,
         {
+            assert!(r >= 1 && c >= 1);
+            let mut v = Vec::with_capacity(r*c);
+            for _ in 0..(r * c) {
+                v.push(T::default());
+            }
+            let vb = v.into_boxed_slice();
+            Array2d {
+                vec_slice: vb,
+                no_rows: r,
+                no_columns: c,
+            }
+        }
+
+        /// return the 2d array as 1d slice iterable
+        pub fn iter(&self) -> impl Iterator<Item = &T> {
             self.vec_slice.iter()
         }
 
@@ -163,17 +169,17 @@ pub mod array2d
 
         /// convert 2d position to 1d position row_to * column_count + column_to, row_major
         pub fn d2_index_d1<F>(&self, pos: &F) -> usize
-            where
-                F: GridIdx,
+        where
+            F: GridIdx,
         {
             pos.no_row() * self.column_count() + pos.no_column()
         }
 
         /// swap two position values
         pub fn swap<F, K>(&mut self, pos1: &F, pos2: &K)
-            where
-                F: GridIdx,
-                K: GridIdx,
+        where
+            F: GridIdx,
+            K: GridIdx,
         {
             let converted_rc1 = self.d2_index_d1(pos1);
             let converted_rc2 = self.d2_index_d1(pos2);
@@ -189,29 +195,25 @@ pub mod array2d
         }
 
         /// return row as iterable
-        pub fn iter_row(&self, row_index: usize) -> impl Iterator<Item=&T> {
+        pub fn iter_row(&self, row_index: usize) -> impl Iterator<Item = &T> {
             let (start, end) = self.row_between(row_index);
             self.vec_slice[start..end].iter()
-
         }
 
         /// return row as mutable
-        pub fn mut_row(&mut self, row_index: usize) -> &mut [T]
-        {
+        pub fn mut_row(&mut self, row_index: usize) -> &mut [T] {
             let (start, end) = self.row_between(row_index);
             &mut self.vec_slice[start..end]
         }
 
-
         /// return row as mutable iterable
-        pub fn iter_mut_row(&mut self, row_index: usize) -> impl Iterator<Item=&mut T> {
+        pub fn iter_mut_row(&mut self, row_index: usize) -> impl Iterator<Item = &mut T> {
             let (start, end) = self.row_between(row_index);
             self.vec_slice[start..end].iter_mut()
         }
 
         /// iterate over the rows as mutable
-        pub fn iter_mut_rows(&mut self) -> RowsMut<'_, T>
-        {
+        pub fn iter_mut_rows(&mut self) -> RowsMut<'_, T> {
             let c = self.column_count();
             RowsMut {
                 v: &mut self.vec_slice,
@@ -221,7 +223,7 @@ pub mod array2d
         }
 
         /// iterate over the rows
-        pub fn iter_rows(&self) -> impl Iterator<Item=impl Iterator<Item=&T>> {
+        pub fn iter_rows(&self) -> impl Iterator<Item = impl Iterator<Item = &T>> {
             (0_usize..self.row_count()).map(move |row_index| self.iter_row(row_index))
         }
 
