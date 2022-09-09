@@ -1,4 +1,4 @@
-use array2ds::Array2d;
+use array2ds::array2d::*;
 
 #[derive(Debug, Clone)]
 struct W {
@@ -7,37 +7,35 @@ struct W {
 }
 
 fn main() {
-    //let mut mm = Array2d::<W>::new(5,10);
-
-    let cap = 5000;
-    let mut mf = Vec::<W>::with_capacity(cap);
-    let mut mn = Vec::<Option<W>>::with_capacity(cap);
-    let mut ml = Array2d::<W>::filled_with(
+    let mut mm = Array2d::filled_with(
         W {
-            s: "hello world".to_string(),
-            q: 100,
+            s: "hello".to_string(),
+            q: 19,
         },
-        500,
-        10,
+        5_usize,
+        4_usize,
     );
-    let mut wq = Vec::<i32>::new();
-    for i in 0..cap {
-        mf.push(W {
-            s: "hello world".to_string(),
-            q: 100,
-        });
+    //println!("{:?}",&mm) ;
+    mm[[1_usize, 3_usize]] = W {
+        s: "after".to_string(),
+        q: 20,
+    };
 
-        mn.push(Some(W {
-            s: "hello world".to_string(),
-            q: 100,
-        }));
+    /*for ro in 0..mm.row_count() {
+        for f in mm.iter_mut_row(ro) {
+            *f = W {
+                s: "ok".to_string(),
+                q: 324,
+            };
+        }
+    }*/
+
+    for m in mm.iter_mut_rows()
+    {
+        for r in m {
+            *r = W { s: "works".to_string(), q: 22 };
+        }
     }
-    mf.shrink_to_fit();
-    mn.shrink_to_fit();
 
-    let mq = mf.into_boxed_slice();
-    println!("{}", std::mem::size_of_val(&*mq));
-    println!("{}", std::mem::size_of_val(&*mn));
-    println!("{:?}", &ml[(1, 1)]);
-    // println!("{}", std::mem::size_of_val(&**ml));
+    println!("{:?}", &mm);
 }
