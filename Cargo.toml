@@ -6,12 +6,12 @@ authors = ["Yotam <yotamm52@gmail.com>"]
 description = "Simple Package for handling sized 2d arrays in rust, without the usage of the keyword unsafe cuz why not"
 repository = "https://github.com/yotam5/array2ds"
 license-file = "LICENSE"
-keywords = ["gamedev","arrays","2d array","2d","grid"]
+keywords = ["gamedev","arrays","2d-array","2d","grid"]
 categories = ["data-structures"]
 readme = "README.md"
 exclude = [
 ".idea",
-    
+
 ]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
