@@ -140,7 +140,7 @@ pub mod array2d {
             T: Default,
         {
             assert!(r >= 1 && c >= 1);
-            let mut v = Vec::with_capacity(r*c);
+            let mut v = Vec::with_capacity(r * c);
             for _ in 0..(r * c) {
                 v.push(T::default());
             }
