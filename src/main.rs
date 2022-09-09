@@ -1,5 +1,7 @@
 use array2ds::array2d::*;
 
+#[allow(unused_variables)]
+
 #[derive(Debug, Clone)]
 struct W {
     s: String,
