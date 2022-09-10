@@ -29,10 +29,49 @@ fn iter_rows()
     assert_eq!(arr.iter_rows().count(), r);
     arr.iter_rows().for_each(|rr|
         {
-            let roc  = rr.filter(|rn| **rn == n).count();
+            let roc = rr.iter().filter(|rn| **rn == n).count();
             assert_eq!(c, roc)
         }
     );
+}
+
+#[test]
+fn test_column_mut()
+{
+    let r = 10;
+    let c = 20;
+    let v = 15;
+    let vr = 20;
+    let mut arr = Array2d::filled_with(v, r, c);
+
+    for val in arr.column_mut(c - 1)
+    {
+        *val = vr;
+    }
+
+    for val in arr.column(c - 1){
+        assert_eq!(*val,vr);
+    }
+}
+
+
+#[test]
+fn test_column()
+{
+    let r = 10;
+    let c = 20;
+    let v = 15;
+    let vr = 20;
+    let mut arr = Array2d::filled_with(v, r, c);
+
+    for qr in 0..r
+    {
+       arr[[qr,c - 1]] = vr;
+    }
+
+    for val in arr.column(c - 1){
+        assert_eq!(*val,vr);
+    }
 }
 
 #[test]
@@ -54,6 +93,27 @@ fn test_index()
     }
 }
 
+#[test]
+fn test_iter()
+{
+    let r = 10;
+    let c = 5;
+    let n = 8;
+    let board = Array2d::filled_with(n, r, c);
+    let n_count = board.iter().filter(|x| **x == n).count();
+    assert_eq!(n_count, r * c);
+}
+
+#[test]
+fn fill_with_default()
+{
+    let r = 10;
+    let c = 13;
+    let num_default = i32::default();
+    let arr: Array2d<i32> = Array2d::filled_with_default(r, c);
+    let count = arr.iter().filter(|x| **x == num_default).count();
+    assert_eq!(count, r * c);
+}
 
 #[test]
 fn iter_mut_rows()
