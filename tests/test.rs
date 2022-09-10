@@ -21,6 +21,65 @@ fn test_filled_with()
 }
 
 #[test]
+fn test_iter_mut_rows_rev()
+{
+    let r = 5;
+    let c = 4;
+    let v = 0;
+
+    let mut arr = Array2d::filled_with(v, r, c);
+    
+    let mut counter = 0;
+     for row in 0..r{
+        for col in 0..c{
+            arr[[row,col]] = counter;
+            counter += 1;
+        }
+     }
+      
+      counter -= 1;
+      
+     for row in  arr.iter_mut_rows().rev()
+     {
+        for value in row.iter().rev()
+        {
+            assert_eq!(*value,counter);
+            counter -= 1;
+        }
+     }
+
+}
+
+#[test]
+fn test_iter_rows_rev()
+{
+    let r = 5;
+    let c = 4;
+    let v = 0;
+
+    let mut arr = Array2d::filled_with(v, r, c);
+    
+    let mut counter = 0;
+     for row in 0..r{
+        for col in 0..c{
+            arr[[row,col]] = counter;
+            counter += 1;
+        }
+     }
+      
+      counter -= 1;
+      
+     for row in  arr.iter_rows().rev()
+     {
+        for value in row.iter().rev()
+        {
+            assert_eq!(*value,counter);
+            counter -= 1;
+        }
+     }
+}
+
+#[test]
 fn iter_rows()
 {
     let (r, c) = (20, 30);

@@ -109,11 +109,23 @@ pub mod array2d {
                 if fst.is_empty() {
                     self.v = &[];
                 } else {
-                    self.v.get(..fst.len() - self.skip_columns).unwrap();
+                    self.v = fst.get(..fst.len() - self.skip_columns).unwrap();
                 }
                 Some(snd)
             }
         }
+
+        fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
+            let (adj,overflow) = n.overflowing_mul(self.columns + self.skip_columns);
+            if adj >= self.v.len() || overflow{
+                self.v = &[];
+            }else{
+                self.v = self.v.get(..self.v.len() - adj).unwrap();
+            }
+            self.next_back()
+        }
+
+
     }
 
     impl<'a, T> Iterator for Rows<'a, T>
@@ -156,10 +168,23 @@ pub mod array2d {
                 if fst.is_empty() {
                     self.v = &mut [];
                 } else {
-                    self.v.get(..tmp_len - self.no_columns - self.skip_columns).unwrap();
+                    self.v = fst.get_mut(..tmp_len - self.no_columns - self.skip_columns).unwrap();
                 }
                 Some(snd)
             }
+        }
+
+        fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
+            let (adj,overflow)  = n.overflowing_mul(self.no_columns + self.skip_columns);
+            if adj >= self.v.len() || overflow{
+                self.v = &mut [];
+            }
+            else {
+                let tmp = mem::take(&mut self.v);
+                self.v = tmp.get_mut(..self.v.len() - adj).unwrap();
+            }
+
+            self.next_back()
         }
     }
 
