@@ -1,5 +1,5 @@
 [package]
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 name = "array2ds"
 authors = ["Yotam <yotamm52@gmail.com>"]

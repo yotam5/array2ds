@@ -16,7 +16,7 @@ cargo run --example 'example_name'
 - iterating over rows both mutable and not
 - grid sized cant be changed after created
 - can index with (row,column) or [row,column] and easily overload to other ways
-- UPCOMING: iterating over columns, and diagnoly
+- can iterate over columns
 
 ```rust
 use array2ds::array2d::*;
